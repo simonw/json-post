@@ -3,11 +3,11 @@ import httpx
 import json
 import random
 
+
 @click.command()
 @click.version_option()
 @click.argument("json_file", type=click.File("r"))
 @click.argument("url")
-
 @click.option(
     "-h",
     "--header",
@@ -18,7 +18,7 @@ import random
 )
 @click.option(
     "--log",
-    type=click.File('w'),
+    type=click.File("w"),
     help="Log response bodies as newline-JSON to this file",
 )
 @click.option(
@@ -46,7 +46,23 @@ import random
     help="Timeout (in seconds) for network read operations",
     type=int,
 )
-def cli(json_file, url, headers, log, batch_size, stop_after, reverse, shuffle, http_read_timeout):
+@click.option(
+    "--filter",
+    "filter",
+    help="Python expression accepting 'item' that returns True or False for if it should be included"
+)
+def cli(
+    json_file,
+    url,
+    headers,
+    log,
+    batch_size,
+    stop_after,
+    reverse,
+    shuffle,
+    http_read_timeout,
+    filter,
+):
     "Tool for posting JSON to an API, broken into pages"
     items = json.load(json_file)
     if reverse:
@@ -55,6 +71,19 @@ def cli(json_file, url, headers, log, batch_size, stop_after, reverse, shuffle, 
         random.shuffle(items)
     if stop_after:
         items = items[:stop_after]
+    if filter:
+        if "\n" not in filter and not filter.strip().startswith("return "):
+            filter = "return {}".format(filter)
+        # Compile the code into a function body called fn(value)
+        new_code = ["def fn(value):"]
+        for line in filter.split("\n"):
+            new_code.append("    {}".format(line))
+        code_o = compile("\n".join(new_code), "<string>", "exec")
+        locals = {}
+        globals = {}
+        exec(code_o, globals, locals)
+        fn = locals["fn"]
+        items = [item for item in items if fn(item)]
     if batch_size:
         batches = chunks(items, batch_size)
     else:
