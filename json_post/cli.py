@@ -1,7 +1,8 @@
-import click
-import httpx
 import json
 import random
+
+import click
+import httpx
 
 
 @click.command()

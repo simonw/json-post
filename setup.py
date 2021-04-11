@@ -1,5 +1,6 @@
-from setuptools import setup
 import os
+
+from setuptools import setup
 
 VERSION = "0.2a0"
 
@@ -32,7 +33,7 @@ setup(
         json-post=json_post.cli:cli
     """,
     install_requires=["click", "httpx"],
-    extras_require={"test": ["pytest"]},
+    extras_require={"test": ["pytest", "pytest-httpx"]},
     tests_require=["json-post[test]"],
     python_requires=">=3.6",
 )
