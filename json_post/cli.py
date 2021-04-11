@@ -49,7 +49,10 @@ import random
 @click.option(
     "--filter",
     "filter",
-    help="Python expression accepting 'item' that returns True or False for if it should be included"
+    help="Python expression accepting 'item' that returns True or False for if it should be included",
+)
+@click.option(
+    "--count", is_flag=True, help="Output a count of the number of items and exit"
 )
 def cli(
     json_file,
@@ -62,6 +65,7 @@ def cli(
     shuffle,
     http_read_timeout,
     filter,
+    count,
 ):
     "Tool for posting JSON to an API, broken into pages"
     items = json.load(json_file)
@@ -84,6 +88,9 @@ def cli(
         exec(code_o, globals, locals)
         fn = locals["fn"]
         items = [item for item in items if fn(item)]
+    if count:
+        click.echo(len(items))
+        return
     if batch_size:
         batches = chunks(items, batch_size)
     else:
