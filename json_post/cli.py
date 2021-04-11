@@ -99,7 +99,7 @@ def cli(
         client = httpx.Client(timeout=httpx.Timeout(5, read=http_read_timeout))
     else:
         client = httpx
-    with click.progressbar(length=len(items)) as bar:
+    with click.progressbar(length=len(items), show_pos=True) as bar:
         for batch in batches:
             response = client.post(url, json=batch, headers=dict(headers))
             if response.status_code != 200:
