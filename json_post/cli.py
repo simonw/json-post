@@ -66,6 +66,8 @@ def cli(json_file, url, headers, log, batch_size, stop_after, reverse, shuffle, 
     with click.progressbar(length=len(items)) as bar:
         for batch in batches:
             response = client.post(url, json=batch, headers=dict(headers))
+            if response.status_code != 200:
+                click.echo(response.content, err=True)
             if log:
                 log.write(json.dumps(response.json()) + "\n")
             bar.update(len(batch))
