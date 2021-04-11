@@ -49,7 +49,6 @@ import httpx
 )
 @click.option(
     "--filter",
-    "filter",
     help="Python expression accepting 'item' that returns True or False for if it should be included",
 )
 @click.option(
