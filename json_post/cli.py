@@ -79,8 +79,8 @@ def cli(
     if filter:
         if "\n" not in filter and not filter.strip().startswith("return "):
             filter = "return {}".format(filter)
-        # Compile the code into a function body called fn(value)
-        new_code = ["def fn(value):"]
+        # Compile the code into a function body called fn(item)
+        new_code = ["def fn(item):"]
         for line in filter.split("\n"):
             new_code.append("    {}".format(line))
         code_o = compile("\n".join(new_code), "<string>", "exec")
